@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import MapKit
+import CoreLocation
 
 class FLNativeViewFactory: NSObject, FlutterPlatformViewFactory {
     private var messenger: FlutterBinaryMessenger
@@ -28,10 +29,10 @@ class FLNativeViewFactory: NSObject, FlutterPlatformViewFactory {
     }
 }
 
-// Class implementing the native iOS view with Apple Maps
-class FLNativeView: NSObject, FlutterPlatformView, MKMapViewDelegate {
+class FLNativeView: NSObject, FlutterPlatformView, MKMapViewDelegate, CLLocationManagerDelegate {
     private var _view: UIView
     private var mapView: MKMapView
+    private var locationManager: CLLocationManager
     private var messenger: FlutterBinaryMessenger?
 
     init(
@@ -43,31 +44,53 @@ class FLNativeView: NSObject, FlutterPlatformView, MKMapViewDelegate {
         self.messenger = messenger
         _view = UIView(frame: frame)
         mapView = MKMapView(frame: _view.bounds)
+        locationManager = CLLocationManager()
         super.init()
         createNativeView(view: _view)
         mapView.delegate = self
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
     }
 
-    // Returns the view to be embedded in the Flutter interface
     func view() -> UIView {
         return _view
     }
 
-    // Creates and configures the native Apple Maps view
     func createNativeView(view: UIView) {
         view.backgroundColor = UIColor.white
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        mapView.showsUserLocation = true
         view.addSubview(mapView)
     }
 
-    // Animates the map to the specified location
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.first {
+            let coordinate = location.coordinate
+            
+            // Adjust the zoom level for the region 
+            let span = MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5) 
+            
+            let region = MKCoordinateRegion(center: coordinate, span: span)
+            mapView.setRegion(region, animated: true)
+            
+            // Stop updating location to save battery
+            locationManager.stopUpdatingLocation()
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            locationManager.startUpdatingLocation()
+        }
+    }
+
     func animateToLocation(lat: Double, lng: Double) {
         let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
-        let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 5000, longitudinalMeters: 5000)
+        let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 2000, longitudinalMeters: 2000)
         mapView.setRegion(region, animated: true)
     }
 
-    // Adds a marker to the map at the specified location with a title
     func addMarker(lat: Double, lng: Double, title: String) {
         let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
         let annotation = MKPointAnnotation()
@@ -76,12 +99,10 @@ class FLNativeView: NSObject, FlutterPlatformView, MKMapViewDelegate {
         mapView.addAnnotation(annotation)
     }
 
-    // Clears all markers from the map
     func clearAllMarkers() {
         mapView.removeAnnotations(mapView.annotations)
     }
 
-    // Called when the user taps a marker on the map; sends data to Flutter
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if let annotation = view.annotation {
             let lat = annotation.coordinate.latitude

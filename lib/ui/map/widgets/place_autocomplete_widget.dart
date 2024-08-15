@@ -51,29 +51,24 @@ class _PlaceAutoCompleteState extends State<PlaceAutoComplete> {
   Widget _buildAutoCompleteTextField() {
     return Container(
       padding: Ui.horizontalPaddingN,
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          cardColor: Colors.transparent,
+      child: GooglePlaceAutoCompleteTextField(
+        focusNode: _focusNode,
+        boxDecoration:
+            const BoxDecoration(color: Colors.white, boxShadow: Ui.boxShadow),
+        textEditingController: _controller,
+        googleAPIKey: Constants.googleMapsApiKey,
+        inputDecoration: InputDecoration(
+          hintText: 'Wyszukaj swoją lokalizacje'.hardcoded,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
         ),
-        child: GooglePlaceAutoCompleteTextField(
-          focusNode: _focusNode,
-          boxDecoration:
-              const BoxDecoration(color: Colors.white, boxShadow: Ui.boxShadow),
-          textEditingController: _controller,
-          googleAPIKey: Constants.googleMapsApiKey,
-          inputDecoration: InputDecoration(
-            hintText: 'Wyszukaj swoją lokalizacje'.hardcoded,
-            border: InputBorder.none,
-            enabledBorder: InputBorder.none,
-          ),
-          debounceTime: _debouncePrediction,
-          isLatLngRequired: true,
-          getPlaceDetailWithLatLng: _getPlaceDetailWithLatLng,
-          itemBuilder: _buildPredictionItem,
-          itemClick: _onItemClick,
-          containerHorizontalPadding: Ui.horizontalPaddingS.horizontal,
-          isCrossBtnShown: true,
-        ),
+        debounceTime: _debouncePrediction,
+        isLatLngRequired: true,
+        getPlaceDetailWithLatLng: _getPlaceDetailWithLatLng,
+        itemBuilder: _buildPredictionItem,
+        itemClick: _onItemClick,
+        containerHorizontalPadding: Ui.horizontalPaddingS.horizontal,
+        isCrossBtnShown: true,
       ),
     );
   }
