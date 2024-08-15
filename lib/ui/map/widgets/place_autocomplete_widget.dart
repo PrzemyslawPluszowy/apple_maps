@@ -102,7 +102,7 @@ class _PlaceAutoCompleteState extends State<PlaceAutoComplete> {
       child: Row(
         children: [
           const Icon(Icons.location_on),
-          const SizedBox(width: 7),
+          gapH8,
           Expanded(child: Text(prediction.description ?? "")),
         ],
       ),
