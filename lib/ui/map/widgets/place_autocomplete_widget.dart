@@ -106,9 +106,16 @@ class _PlaceAutoCompleteState extends State<PlaceAutoComplete> {
       padding: Ui.paddingL,
       child: Row(
         children: [
-          const Icon(Icons.location_on),
+          Icon(
+            Icons.location_on,
+            color: Theme.of(context).primaryColor,
+          ),
           gapH8,
           Expanded(child: Text(prediction.description ?? '')),
+          Icon(
+            Icons.arrow_right,
+            color: Theme.of(context).primaryColor,
+          ),
         ],
       ),
     );
