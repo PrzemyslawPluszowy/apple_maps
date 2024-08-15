@@ -1,5 +1,5 @@
 import 'package:apple_maps/helpers/map_platform_helper.dart';
-import 'package:flutter/material.dart';
+import 'package:apple_maps/main_export.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NavigateContainer extends StatelessWidget {
@@ -46,7 +46,7 @@ class NavigateContainer extends StatelessWidget {
                     Expanded(
                         child: RichText(
                       text: TextSpan(
-                        text: 'Prowadź do\n',
+                        text: 'Prowadź do\n'.hardcoded,
                         style: Theme.of(context).textTheme.bodyLarge,
                         children: [
                           TextSpan(

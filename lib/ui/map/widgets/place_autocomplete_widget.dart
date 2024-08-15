@@ -1,7 +1,5 @@
-import 'package:apple_maps/core/constatns_api.dart';
-import 'package:apple_maps/core/theme/ui.dart';
 import 'package:apple_maps/helpers/map_platform_helper.dart';
-import 'package:flutter/material.dart';
+import 'package:apple_maps/main_export.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 
@@ -62,9 +60,9 @@ class _PlaceAutoCompleteState extends State<PlaceAutoComplete> {
           boxDecoration:
               const BoxDecoration(color: Colors.white, boxShadow: Ui.boxShadow),
           textEditingController: _controller,
-          googleAPIKey: ConstantsApi.googleMapsApiKey,
-          inputDecoration: const InputDecoration(
-            hintText: "Wyszukaj swoją lokalizacje",
+          googleAPIKey: Constants.googleMapsApiKey,
+          inputDecoration: InputDecoration(
+            hintText: 'Wyszukaj swoją lokalizacje'.hardcoded,
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
           ),

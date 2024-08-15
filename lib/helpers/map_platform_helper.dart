@@ -1,13 +1,17 @@
+import 'package:apple_maps/helpers/maps_ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 ///all method call platform channel from [FLNativeView]
 /// and register in [AppDelegate]
 /// used to controlling apple maps from native view
 
 class MapPlatformHelper {
-  static const MethodChannel platform = MethodChannel('com.example/map');
+  /// [mapChannel] and [mapChannel] are used to identify
+  /// chanel in [AppDelegate] if you modify this values You
+  /// must change in [AppDelegate] !!!!!!!!!!!!
+
+  static const MethodChannel mapChannel = MethodChannel('com.example/map');
   static const MethodChannel markerChannel =
       MethodChannel('com.example/map_marker_click');
 
@@ -27,7 +31,7 @@ class MapPlatformHelper {
   static Future<void> animateToPosition(
       int viewId, double lat, double lng) async {
     try {
-      await platform.invokeMethod('animateToLocation', {
+      await mapChannel.invokeMethod('animateToLocation', {
         'viewId': viewId,
         'lat': lat,
         'lng': lng,
@@ -40,7 +44,7 @@ class MapPlatformHelper {
   static Future<void> addMarker(
       int viewId, double lat, double lng, String title) async {
     try {
-      await platform.invokeMethod('addMarker', {
+      await mapChannel.invokeMethod('addMarker', {
         'viewId': viewId,
         'lat': lat,
         'lng': lng,
@@ -53,7 +57,7 @@ class MapPlatformHelper {
 
   static Future<void> clearAllMarkers(int viewId) async {
     try {
-      await platform.invokeMethod('clearAllMarkers', {
+      await mapChannel.invokeMethod('clearAllMarkers', {
         'viewId': viewId,
       });
     } on PlatformException catch (e) {
@@ -69,38 +73,5 @@ class MapPlatformHelper {
 
     ///open flutter dialog
     MapsUiHelper.showOnTapMarkerDialog(context, markerTitle, lat, lng);
-  }
-}
-
-class MapsUiHelper {
-  /// this widget show FlutterModal when user tap on Native Swift Marker
-  static Future<dynamic> showOnTapMarkerDialog(
-      BuildContext context, String markerTitle, double lat, double lng) {
-    return showAdaptiveDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(markerTitle),
-          actions: <Widget>[
-            FilledButton(
-                child: const Text('Otwórz w Apple Maps'),
-                onPressed: () async {
-                  final Uri mapUri =
-                      Uri.parse('https://maps.apple.com/?q=$lat,$lng');
-                  if (!await launchUrl(mapUri,
-                      mode: LaunchMode.externalApplication)) {
-                    throw Exception('Could not launch ');
-                  }
-                }),
-            TextButton(
-              child: const Text('Wyjdź'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }
