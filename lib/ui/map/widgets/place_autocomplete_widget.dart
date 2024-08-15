@@ -63,12 +63,10 @@ class _PlaceAutoCompleteState extends State<PlaceAutoComplete> {
           enabledBorder: InputBorder.none,
         ),
         debounceTime: _debouncePrediction,
-        isLatLngRequired: true,
         getPlaceDetailWithLatLng: _getPlaceDetailWithLatLng,
         itemBuilder: _buildPredictionItem,
         itemClick: _onItemClick,
         containerHorizontalPadding: Ui.horizontalPaddingS.horizontal,
-        isCrossBtnShown: true,
       ),
     );
   }
@@ -79,21 +77,28 @@ class _PlaceAutoCompleteState extends State<PlaceAutoComplete> {
     //unfocus keyboard
     _focusNode.unfocus();
 
-    final double? lat = double.tryParse(prediction.lat!);
-    final double? lng = double.tryParse(prediction.lng!);
+    final lat = double.tryParse(prediction.lat!);
+    final lng = double.tryParse(prediction.lng!);
     if (lat != null && lng != null && widget.viewId != null) {
       //callback to preview Ui to show navigate container
       widget.onSelectPlace.value = (lat, lng, prediction.description!);
       //add marker to map
       await MapPlatformHelper.addMarker(
-          widget.viewId!, lat, lng, prediction.description!);
+        widget.viewId!,
+        lat,
+        lng,
+        prediction.description!,
+      );
       //animate to position
       await MapPlatformHelper.animateToPosition(widget.viewId!, lat, lng);
     }
   }
 
   Widget _buildPredictionItem(
-      BuildContext context, int index, Prediction prediction) {
+    BuildContext context,
+    int index,
+    Prediction prediction,
+  ) {
     return Container(
       height: _textfieldHeigh,
       decoration:
@@ -103,7 +108,7 @@ class _PlaceAutoCompleteState extends State<PlaceAutoComplete> {
         children: [
           const Icon(Icons.location_on),
           gapH8,
-          Expanded(child: Text(prediction.description ?? "")),
+          Expanded(child: Text(prediction.description ?? '')),
         ],
       ),
     );
@@ -111,9 +116,10 @@ class _PlaceAutoCompleteState extends State<PlaceAutoComplete> {
 
   void _onItemClick(Prediction prediction) {
     FocusManager.instance.primaryFocus?.unfocus();
-    _controller.text = prediction.description ?? "";
-    _controller.selection = TextSelection.fromPosition(
-      TextPosition(offset: prediction.description?.length ?? 0),
-    );
+    _controller
+      ..text = prediction.description ?? ''
+      ..selection = TextSelection.fromPosition(
+        TextPosition(offset: prediction.description?.length ?? 0),
+      );
   }
 }

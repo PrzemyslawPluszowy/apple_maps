@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:apple_maps/helpers/maps_ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,16 +22,19 @@ class MapPlatformHelper {
       switch (call.method) {
         case 'onMarkerClick':
           await onMarkerClick(context, call.arguments);
-          break;
         default:
           throw MissingPluginException(
-              'Niezaimplementowana metoda: ${call.method}');
+            'Niezaimplementowana metoda: ${call.method}',
+          );
       }
     });
   }
 
   static Future<void> animateToPosition(
-      int viewId, double lat, double lng) async {
+    int viewId,
+    double lat,
+    double lng,
+  ) async {
     try {
       await mapChannel.invokeMethod('animateToLocation', {
         'viewId': viewId,
@@ -42,7 +47,11 @@ class MapPlatformHelper {
   }
 
   static Future<void> addMarker(
-      int viewId, double lat, double lng, String title) async {
+    int viewId,
+    double lat,
+    double lng,
+    String title,
+  ) async {
     try {
       await mapChannel.invokeMethod('addMarker', {
         'viewId': viewId,
@@ -66,12 +75,16 @@ class MapPlatformHelper {
   }
 
   static Future<void> onMarkerClick(
-      BuildContext context, dynamic arguments) async {
-    final String markerTitle = arguments['title'];
-    final double lat = arguments['lat'];
-    final double lng = arguments['lng'];
+    BuildContext context,
+    dynamic arguments,
+  ) async {
+    final markerTitle = arguments['title'] as String;
+    final lat = arguments['lat'] as double;
+    final lng = arguments['lng'] as double;
 
     ///open flutter dialog
-    MapsUiHelper.showOnTapMarkerDialog(context, markerTitle, lat, lng);
+    unawaited(
+      MapsUiHelper.showOnTapMarkerDialog(context, markerTitle, lat, lng),
+    );
   }
 }

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class MapView extends StatelessWidget {
+  const MapView({required this.onPlatformViewCreated, super.key});
   //callback function to save viewId used in method channel
-  final Function(int) onPlatformViewCreated;
+  final void Function(int) onPlatformViewCreated;
 
   ///Don't change directly this [_viewType] used to identify in [ios/AppDelegate]
   static const _viewType = 'SwiftMapView';
-
-  const MapView({required this.onPlatformViewCreated, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +18,6 @@ class MapView extends StatelessWidget {
       viewType: _viewType,
       layoutDirection: TextDirection.ltr,
       creationParams: const <String, dynamic>{},
-      hitTestBehavior: PlatformViewHitTestBehavior.opaque,
       creationParamsCodec: const StandardMessageCodec(),
       onPlatformViewCreated: onPlatformViewCreated,
     );

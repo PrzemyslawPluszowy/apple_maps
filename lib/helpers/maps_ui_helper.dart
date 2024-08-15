@@ -4,7 +4,11 @@ import 'package:url_launcher/url_launcher.dart';
 class MapsUiHelper {
   /// this widget show FlutterModal when user tap on Native Swift Marker
   static Future<dynamic> showOnTapMarkerDialog(
-      BuildContext context, String markerTitle, double lat, double lng) {
+    BuildContext context,
+    String markerTitle,
+    double lat,
+    double lng,
+  ) {
     return showAdaptiveDialog(
       context: context,
       builder: (BuildContext context) {
@@ -26,15 +30,17 @@ class MapsUiHelper {
           ),
           actions: <Widget>[
             FilledButton(
-                child: Text('Otwórz w Apple Maps'.hardcoded),
-                onPressed: () async {
-                  final Uri mapUri =
-                      Uri.parse('https://maps.apple.com/?q=$lat,$lng');
-                  if (!await launchUrl(mapUri,
-                      mode: LaunchMode.externalApplication)) {
-                    throw Exception('Could not launch ');
-                  }
-                }),
+              child: Text('Otwórz w Apple Maps'.hardcoded),
+              onPressed: () async {
+                final mapUri = Uri.parse('https://maps.apple.com/?q=$lat,$lng');
+                if (!await launchUrl(
+                  mapUri,
+                  mode: LaunchMode.externalApplication,
+                )) {
+                  throw Exception('Could not launch ');
+                }
+              },
+            ),
             TextButton(
               child: Text('Wyjdź'.hardcoded),
               onPressed: () {

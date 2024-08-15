@@ -37,7 +37,7 @@ class _MapScreenState extends State<MapScreen> {
             )
           else
             Center(child: Text('Nie udało sie załadować widoku'.hardcoded)),
-          NavigateContainer(onSelectPlace: _onSelectPlace, viewId: _viewId)
+          NavigateContainer(onSelectPlace: _onSelectPlace, viewId: _viewId),
         ],
       ),
     );
