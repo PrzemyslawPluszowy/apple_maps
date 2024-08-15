@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:apple_maps/common/custom_toast.dart';
 import 'package:apple_maps/helpers/maps_ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,7 @@ class MapPlatformHelper {
   static const MethodChannel mapChannel = MethodChannel('com.example/map');
   static const MethodChannel markerChannel =
       MethodChannel('com.example/map_marker_click');
+  static const String _err = '''Przepraszamy wystapił nieoczekiwany błąd''';
 
   static void initializeMethodChannel(BuildContext context) {
     markerChannel.setMethodCallHandler((call) async {
@@ -23,9 +25,7 @@ class MapPlatformHelper {
         case 'onMarkerClick':
           await onMarkerClick(context, call.arguments);
         default:
-          throw MissingPluginException(
-            'Niezaimplementowana metoda: ${call.method}',
-          );
+          CustomToast.error(context, _err);
       }
     });
   }
@@ -42,7 +42,8 @@ class MapPlatformHelper {
         'lng': lng,
       });
     } on PlatformException catch (e) {
-      debugPrint("Błąd podczas animowania do pozycji: '${e.message}'.");
+      debugPrint("Błąd podczas animacji do pozycji: '${e.message}'.");
+      CustomToast.errWithoutContext(_err);
     }
   }
 
@@ -61,6 +62,7 @@ class MapPlatformHelper {
       });
     } on PlatformException catch (e) {
       debugPrint("Błąd podczas dodawania markera: '${e.message}'.");
+      CustomToast.errWithoutContext(_err);
     }
   }
 
@@ -71,6 +73,7 @@ class MapPlatformHelper {
       });
     } on PlatformException catch (e) {
       debugPrint("Błąd podczas czyszczenia markerów: '${e.message}'.");
+      CustomToast.errWithoutContext(_err);
     }
   }
 

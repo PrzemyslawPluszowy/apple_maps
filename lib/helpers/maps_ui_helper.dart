@@ -1,3 +1,4 @@
+import 'package:apple_maps/common/custom_toast.dart';
 import 'package:apple_maps/main_export.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,7 +17,7 @@ class MapsUiHelper {
           title: Icon(
             Icons.location_on,
             color: Theme.of(context).primaryColor,
-            size: 40,
+            size: Sizes.p48,
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -37,7 +38,9 @@ class MapsUiHelper {
                   mapUri,
                   mode: LaunchMode.externalApplication,
                 )) {
-                  throw Exception('Could not launch ');
+                  if (context.mounted) {
+                    CustomToast.error(context, 'Nie udało się otworzyć map');
+                  }
                 }
               },
             ),
