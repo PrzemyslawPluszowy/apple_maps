@@ -29,9 +29,10 @@ class FLNativeViewFactory: NSObject, FlutterPlatformViewFactory {
     }
 }
 
-class FLNativeView: NSObject, FlutterPlatformView {
+class FLNativeView: NSObject, FlutterPlatformView, MKMapViewDelegate {
     private var _view: UIView
     private var mapView: MKMapView
+    private var messenger: FlutterBinaryMessenger?
 
     init(
         frame: CGRect,
@@ -39,10 +40,12 @@ class FLNativeView: NSObject, FlutterPlatformView {
         arguments args: Any?,
         binaryMessenger messenger: FlutterBinaryMessenger?
     ) {
+        self.messenger = messenger
         _view = UIView()
         mapView = MKMapView(frame: _view.bounds)
         super.init()
         createNativeView(view: _view)
+        mapView.delegate = self  // Ustawienie delegata
     }
 
     func view() -> UIView {
@@ -63,9 +66,29 @@ class FLNativeView: NSObject, FlutterPlatformView {
 
     func addMarker(lat: Double, lng: Double, title: String) {
         let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
-        let annotation = MKPointAnnotation()
+        let annotation = MKPointAnnotation(
+
+        )
         annotation.coordinate = coordinate
         annotation.title = title
         mapView.addAnnotation(annotation)
     }
+
+    func clearAllMarkers(
+    ) {
+        mapView.removeAnnotations(mapView.annotations)
+    }
+    
+
+func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    if let annotation = view.annotation {
+        let lat = annotation.coordinate.latitude
+        let lng = annotation.coordinate.longitude
+        let title = annotation.title ?? ""
+
+        let channel = FlutterMethodChannel(name: "com.example/map_marker_click", binaryMessenger: messenger!)
+        
+        channel.invokeMethod("onMarkerClick", arguments: ["lat": lat, "lng": lng, "title": title])
+    }
+}
 }

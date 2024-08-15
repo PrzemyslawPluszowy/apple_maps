@@ -4,7 +4,7 @@ import UIKit
 @main
 class AppDelegate: FlutterAppDelegate {
     private var mapViewFactory: FLNativeViewFactory?
-    private var views: [Int64: FLNativeView] = [:] // Mapowanie identyfikatorów do instancji widoków
+    private var views: [Int64: FLNativeView] = [:] 
 
     override func application(
         _ application: UIApplication,
@@ -12,12 +12,10 @@ class AppDelegate: FlutterAppDelegate {
     ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
 
-        // Rejestracja fabryki widoków natywnych
         let controller = window?.rootViewController as! FlutterViewController
         mapViewFactory = FLNativeViewFactory(messenger: controller.binaryMessenger)
-        registrar(forPlugin: "SwiftUIView")?.register(mapViewFactory!, withId: "SwiftUIView")
+        registrar(forPlugin: "SwiftUIView")?.register(mapViewFactory!, withId: "SwiftUIView",gestureRecognizersBlockingPolicy:FlutterPlatformViewGestureRecognizersBlockingPolicyWaitUntilTouchesEnded)
         
-        // Utworzenie kanału metod
         let channel = FlutterMethodChannel(name: "com.example/map", binaryMessenger: controller.binaryMessenger)
         channel.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
             if call.method == "animateToLocation" {
@@ -28,7 +26,6 @@ class AppDelegate: FlutterAppDelegate {
                     result(FlutterError(code: "INVALID_ARGUMENT", message: "Invalid arguments", details: nil))
                     return
                 }
-                // Wywołanie metody na odpowiedniej instancji widoku mapy
                 self?.views[viewId]?.animateToLocation(lat: lat, lng: lng)
                 result("Success")
             } else if call.method == "addMarker"{
@@ -44,8 +41,16 @@ class AppDelegate: FlutterAppDelegate {
                 self?.views[viewId]?.addMarker(lat: lat, lng: lng, title: title)
                 result("Success")
             }
-            
-            else {
+            else if call.method == "clearAllMarkers" {
+                guard let args = call.arguments as? [String: Any],
+                      let viewId = args["viewId"] as? Int64 else {
+                    result(FlutterError(code: "INVALID_ARGUMENT", message: "Invalid arguments", details: nil))
+                    return
+                }
+                self?.views[viewId]?.clearAllMarkers()
+                result("Success")
+            }
+            else  {
                 result(FlutterMethodNotImplemented)
             }
         }
@@ -53,7 +58,6 @@ class AppDelegate: FlutterAppDelegate {
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
-    // Dodaj metodę do rejestrowania instancji widoków
     func registerView(_ view: FLNativeView, forId viewId: Int64) {
         views[viewId] = view
     }
