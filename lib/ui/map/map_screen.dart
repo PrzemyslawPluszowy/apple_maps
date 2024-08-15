@@ -14,12 +14,18 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   int? _viewId;
 
+  ///[_onSelectPlace] set to not null when user tap on element in places list
+  ///then show info container
+  ///refreshing after clic on next item
+
   final ValueNotifier<(double, double, String)?> _onSelectPlace =
       ValueNotifier(null);
 
   @override
   void initState() {
     super.initState();
+
+    ///Initialize to listening native tap marker and open flutter dialog
     MapPlatformHelper.initializeMethodChannel(context);
   }
 
@@ -36,7 +42,11 @@ class _MapScreenState extends State<MapScreen> {
               onSelectPlace: _onSelectPlace,
             )
           else
-            Center(child: Text('Nie udało sie załadować widoku'.hardcoded)),
+            Center(
+              child: Text(
+                'Przepraszamy, Nie udało sie załadować widoku'.hardcoded,
+              ),
+            ),
           NavigateContainer(onSelectPlace: _onSelectPlace, viewId: _viewId),
         ],
       ),
